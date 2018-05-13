@@ -8,7 +8,7 @@ FILES=data_uncompressed/train_chunk*
 for f in $FILES
 do
   echo "Unzipping $f file..."
-  tar -vx -k -f $f -C data/train
+  unzip -j $f -d data/train
 done
 
 unzip test.zip -d data/test
