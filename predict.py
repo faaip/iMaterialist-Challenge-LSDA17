@@ -102,9 +102,14 @@ ids = []
 predicted_labels = []
 
 for i in tqdm(json_data['images'][:5]):
+    try:
         pred = get_prediction(test_dir + str(i['image_id']) + '.jpg')
         ids.append(i['image_id'])
         predicted_labels.append(pred)
+    except FileNotFoundError:
+        ids.append(i['image_id'])
+        predicted_labels.append(np.random.randint(0,128))
+
 
 my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
 file_name = 'submission_' + str(datetime.datetime.now()) +'.csv'
