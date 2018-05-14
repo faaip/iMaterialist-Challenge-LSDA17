@@ -21,8 +21,8 @@ vgg16_model = applications.VGG16(include_top=False, weights='imagenet')
 BATCH_SIZE = 16
 IMG_WIDTH, IMG_HEIGHT = 224, 224  # image dimensions
 TOP_MODEL_WEIGHTS_PATH = 'models/bottleneck_fc_model.h5'  # the top layer
-TRAIN_DATA_DIR = 'toy_data/train/'
-VALIDATION_DATA_DIR = 'toy_data/valid/'
+TRAIN_DATA_DIR = '../data/train/'
+VALIDATION_DATA_DIR = '../data/valid/'
 
 
 def get_prediction(image_path):
@@ -103,7 +103,7 @@ ids = []
 predicted_labels = []
 file_name = 'submission_' + str(datetime.datetime.now()) + '.csv'
 
-for i in tqdm(json_data['images'][:5]):
+for i in tqdm(json_data['images']):
     try:
         pred = get_prediction(test_dir + str(i['image_id']) + '.jpg')
         ids.append(i['image_id'])
