@@ -14,9 +14,7 @@ img_width, img_height = 224, 224  # image dimensions
 
 top_model_weights_path = 'models/bottleneck_fc_model.h5'  # the top layer
 train_data_dir = '../data/train/'
-train_data_dir = 'toy_data/train/'
 validation_data_dir = '../data/valid/'
-validation_data_dir = 'toy_data/valid/'
 
 epochs = 50
 batch_size = 32
