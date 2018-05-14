@@ -103,7 +103,7 @@ predicted_labels = []
 file_name = 'submission.csv'
 df = pd.read_csv('submission.csv')
 start_index = df['id'].max()
-print(start_index)
+print("Starting at:",start_index)
 
 for i in tqdm(json_data['images'][start_index:]):
     print(i['image_id'])
