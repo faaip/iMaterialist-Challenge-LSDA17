@@ -100,9 +100,13 @@ test_dir = '../data/test/'
 
 ids = []
 predicted_labels = []
-file_name = 'submission_' + str(datetime.datetime.now()) + '.csv'
+file_name = 'submission.csv'
+df = pd.read_csv('submission.csv')
+start_index = df['id'].max()
+print(start_index)
 
-for i in tqdm(json_data['images']):
+for i in tqdm(json_data['images'][start_index:]):
+    print(i['image_id'])
     try:
         pred = get_prediction(test_dir + str(i['image_id']) + '.jpg')
         ids.append(i['image_id'])
@@ -117,6 +121,6 @@ for i in tqdm(json_data['images']):
             {'id': ids, 'predicted': predicted_labels})
         my_submission.to_csv(file_name, index=False)
 
-# save final
+# # save final
 my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
 my_submission.to_csv(file_name, index=False)
