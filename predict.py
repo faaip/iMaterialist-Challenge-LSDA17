@@ -97,7 +97,6 @@ validation_labels = to_categorical(
 # Load json data
 json_data = json.load(open('kaggle/test.json'))
 test_dir = '../data/test/'
-test_dir = 'data/test/'
 
 ids = []
 predicted_labels = []
@@ -109,10 +108,11 @@ for i in tqdm(json_data['images']):
         ids.append(i['image_id'])
         predicted_labels.append(pred)
     except FileNotFoundError:
+        print('FILE NOT FOUND FOR', str(i['image_id']))
         ids.append(i['image_id'])
         predicted_labels.append(np.random.randint(0, 128))
 
-    if i % 10 == 0:
+    if int(i['image_id']) % 10 == 0:
         my_submission = pd.DataFrame(
             {'id': ids, 'predicted': predicted_labels})
         my_submission.to_csv(file_name, index=False)
