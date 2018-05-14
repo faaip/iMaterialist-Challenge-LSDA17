@@ -107,7 +107,6 @@ start_index = df['id'].max()
 print("Starting at:",start_index)
 
 for i in tqdm(json_data['images'][start_index:]):
-    print(i['image_id'])
     try:
         pred = get_prediction(test_dir + str(i['image_id']) + '.jpg')
         ids.append(i['image_id'])
@@ -117,11 +116,11 @@ for i in tqdm(json_data['images'][start_index:]):
         ids.append(i['image_id'])
         predicted_labels.append(np.random.randint(0, 128))
 
-    if int(i['image_id']) % 10 == 0:
+    if int(i['image_id']) % 100 == 0:
         my_submission = pd.DataFrame(
             {'id': ids, 'predicted': predicted_labels})
         my_submission.to_csv(file_name, index=False)
 
 # # save final
-# my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
-# my_submission.to_csv(file_name, index=False)
+my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
+my_submission.to_csv(file_name, index=False)
