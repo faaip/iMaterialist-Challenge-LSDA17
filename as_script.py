@@ -6,6 +6,8 @@ import numpy as np
 from keras import applications
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
+from keras.optimizers import Adam
+from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import (ImageDataGenerator, img_to_array,
                                        load_img)
 from keras.utils.np_utils import to_categorical
@@ -16,7 +18,7 @@ top_model_weights_path = 'models/bottleneck_fc_model.h5'  # the top layer
 train_data_dir = '../data/train/'
 validation_data_dir = '../data/valid/'
 
-epochs = 50
+epochs = 100
 batch_size = 16
 
 model = applications.VGG16(include_top=False, weights='imagenet')
@@ -56,6 +58,8 @@ def train_bottleneck():
         generator, predict_size_validation, verbose=1)
 
     np.save('bottleneck_features_validation.npy', bottleneck_features_validation)
+
+#train_bottleneck()
 
 # labels for training data
 datagen_top = ImageDataGenerator(rescale=1. / 255)
@@ -100,13 +104,19 @@ model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))  
 model.add(Dense(num_classes, activation='sigmoid'))  
 
-model.compile(optimizer='adam',  
+adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
+model.compile(optimizer=adam,  
           loss='categorical_crossentropy', metrics=['accuracy'])  
+
+# https://stackoverflow.com/questions/43388186/keras-why-my-val-acc-suddenly-drops-at-epoch-42-50
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                          patience=5, min_lr=0.001)
 
 history = model.fit(train_data, train_labels,  
       epochs=epochs,  
       batch_size=batch_size,  
-      validation_data=(validation_data, validation_labels))  
+      validation_data=(validation_data, validation_labels),
+      callbacks=[reduce_lr])  
 
 model.save_weights(top_model_weights_path)  
 
