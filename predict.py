@@ -35,14 +35,6 @@ def get_prediction(image_path):
     image = np.expand_dims(image, axis=0)
     bottleneck_prediction = vgg16_model.predict(image)
 
-    # build top model
-    model = Sequential()
-    model.add(Flatten(input_shape=bottleneck_prediction.shape[1:]))
-    model.add(Dense(256, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(num_classes, activation='sigmoid'))
-
-    model.load_weights(TOP_MODEL_WEIGHTS_PATH)
 
     # use the bottleneck prediction on the top model to get the final classification
     class_predicted = model.predict_classes(bottleneck_prediction)
@@ -75,6 +67,15 @@ train_data = np.load('bottleneck_features_train.npy')
 
 # get the class lebels for the training data, in the original order
 train_labels = generator_top.classes
+
+# build top model
+model = Sequential()
+model.add(Flatten(input_shape=(7, 7, 512)))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='sigmoid'))
+
+model.load_weights(TOP_MODEL_WEIGHTS_PATH)
 
 # convert the training labels to categorical vectors
 train_labels = to_categorical(train_labels, num_classes=num_classes)
@@ -122,5 +123,5 @@ for i in tqdm(json_data['images'][start_index:]):
         my_submission.to_csv(file_name, index=False)
 
 # # save final
-my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
-my_submission.to_csv(file_name, index=False)
+# my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
+# my_submission.to_csv(file_name, index=False)
