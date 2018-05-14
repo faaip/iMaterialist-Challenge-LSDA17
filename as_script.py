@@ -14,11 +14,11 @@ from keras.utils.np_utils import to_categorical
 img_width, img_height = 224, 224  # image dimensions
 
 top_model_weights_path = 'models/bottleneck_fc_model.h5'  # the top layer
-train_data_dir = '../data/train/'
-validation_data_dir = '../data/valid/'
+train_data_dir = 'toy_data/train/'
+validation_data_dir = 'toy_data/valid/'
 
 # hyper parameters
-epochs = 100
+epochs = 16
 batch_size = 16
 
 model = applications.VGG16(include_top=False, weights='imagenet')

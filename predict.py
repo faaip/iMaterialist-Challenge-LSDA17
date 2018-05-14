@@ -1,9 +1,11 @@
+import datetime
 import json
 import math
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from keras import applications
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
@@ -11,8 +13,6 @@ from keras.preprocessing.image import (ImageDataGenerator, img_to_array,
                                        load_img)
 from keras.utils.np_utils import to_categorical
 from tqdm import tqdm
-import pandas as pd
-import datetime
 
 # predictor
 vgg16_model = applications.VGG16(include_top=False, weights='imagenet')
@@ -23,6 +23,7 @@ IMG_WIDTH, IMG_HEIGHT = 224, 224  # image dimensions
 TOP_MODEL_WEIGHTS_PATH = 'models/bottleneck_fc_model.h5'  # the top layer
 TRAIN_DATA_DIR = 'toy_data/train/'
 VALIDATION_DATA_DIR = 'toy_data/valid/'
+
 
 def get_prediction(image_path):
     #print("[INFO] loading and preprocessing image...")
@@ -100,6 +101,7 @@ test_dir = 'data/test/'
 
 ids = []
 predicted_labels = []
+file_name = 'submission_' + str(datetime.datetime.now()) + '.csv'
 
 for i in tqdm(json_data['images'][:5]):
     try:
@@ -108,9 +110,13 @@ for i in tqdm(json_data['images'][:5]):
         predicted_labels.append(pred)
     except FileNotFoundError:
         ids.append(i['image_id'])
-        predicted_labels.append(np.random.randint(0,128))
+        predicted_labels.append(np.random.randint(0, 128))
 
+    if i % 10 == 0:
+        my_submission = pd.DataFrame(
+            {'id': ids, 'predicted': predicted_labels})
+        my_submission.to_csv(file_name, index=False)
 
+# save final
 my_submission = pd.DataFrame({'id': ids, 'predicted': predicted_labels})
-file_name = 'submission_' + str(datetime.datetime.now()) +'.csv'
 my_submission.to_csv(file_name, index=False)
