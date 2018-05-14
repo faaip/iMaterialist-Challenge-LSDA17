@@ -104,13 +104,13 @@ model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))  
 model.add(Dense(num_classes, activation='sigmoid'))  
 
-adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
+adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
 model.compile(optimizer=adam,  
           loss='categorical_crossentropy', metrics=['accuracy'])  
 
 # https://stackoverflow.com/questions/43388186/keras-why-my-val-acc-suddenly-drops-at-epoch-42-50
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
-                          patience=5, min_lr=0.001)
+                          patience=3, min_lr=0.00001)
 
 history = model.fit(train_data, train_labels,  
       epochs=epochs,  
