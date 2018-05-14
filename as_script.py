@@ -1,13 +1,12 @@
 import math
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from keras import applications
+from keras.callbacks import ReduceLROnPlateau
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 from keras.optimizers import Adam
-from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import (ImageDataGenerator, img_to_array,
                                        load_img)
 from keras.utils.np_utils import to_categorical
@@ -18,10 +17,12 @@ top_model_weights_path = 'models/bottleneck_fc_model.h5'  # the top layer
 train_data_dir = '../data/train/'
 validation_data_dir = '../data/valid/'
 
+# hyper parameters
 epochs = 100
 batch_size = 16
 
 model = applications.VGG16(include_top=False, weights='imagenet')
+
 
 def train_bottleneck():
     datagen = ImageDataGenerator(rescale=1. / 255)
@@ -52,14 +53,17 @@ def train_bottleneck():
 
     nb_validation_samples = len(generator.filenames)
 
-    predict_size_validation = int(math.ceil(nb_validation_samples / batch_size))
+    predict_size_validation = int(
+        math.ceil(nb_validation_samples / batch_size))
 
     bottleneck_features_validation = model.predict_generator(
         generator, predict_size_validation, verbose=1)
 
-    np.save('bottleneck_features_validation.npy', bottleneck_features_validation)
+    np.save('bottleneck_features_validation.npy',
+            bottleneck_features_validation)
 
-#train_bottleneck()
+# train_bottleneck()
+
 
 # labels for training data
 datagen_top = ImageDataGenerator(rescale=1. / 255)
@@ -98,35 +102,35 @@ validation_labels = generator_top.classes
 validation_labels = to_categorical(validation_labels, num_classes=num_classes)
 
 # TRAIN TOP MODEL
-model = Sequential()  
-model.add(Flatten(input_shape=train_data.shape[1:]))  
-model.add(Dense(256, activation='relu'))  
-model.add(Dropout(0.5))  
-model.add(Dense(num_classes, activation='sigmoid'))  
+model = Sequential()
+model.add(Flatten(input_shape=train_data.shape[1:]))
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='sigmoid'))
 
 adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
-model.compile(optimizer=adam,  
-          loss='categorical_crossentropy', metrics=['accuracy'])  
+model.compile(optimizer=adam,
+              loss='categorical_crossentropy', metrics=['accuracy'])
 
 # https://stackoverflow.com/questions/43388186/keras-why-my-val-acc-suddenly-drops-at-epoch-42-50
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
-                          patience=3, min_lr=0.00001)
+                              patience=3, min_lr=0.00001)
 
-history = model.fit(train_data, train_labels,  
-      epochs=epochs,  
-      batch_size=batch_size,  
-      validation_data=(validation_data, validation_labels),
-      callbacks=[reduce_lr])  
+history = model.fit(train_data, train_labels,
+                    epochs=epochs,
+                    batch_size=batch_size,
+                    validation_data=(validation_data, validation_labels),
+                    callbacks=[reduce_lr])
 
-model.save_weights(top_model_weights_path)  
+model.save_weights(top_model_weights_path)
 
-(eval_loss, eval_accuracy) = model.evaluate(  
- validation_data, validation_labels, batch_size=batch_size, verbose=1)
+(eval_loss, eval_accuracy) = model.evaluate(
+    validation_data, validation_labels, batch_size=batch_size, verbose=1)
 
-print("[INFO] accuracy: {:.2f}%".format(eval_accuracy * 100))  
-print("[INFO] Loss: {}".format(eval_loss)) 
+print("[INFO] accuracy: {:.2f}%".format(eval_accuracy * 100))
+print("[INFO] Loss: {}".format(eval_loss))
 
-# plot 
+# plot
 plt.figure(1)
 
 # summarize history for accuracy
@@ -146,4 +150,4 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('batch_size_'+ str(batch_size) + '.png')
+plt.savefig('batch_size_' + str(batch_size) + '.png')
