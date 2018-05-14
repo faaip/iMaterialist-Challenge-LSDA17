@@ -14,47 +14,50 @@ img_width, img_height = 224, 224  # image dimensions
 
 top_model_weights_path = 'models/bottleneck_fc_model.h5'  # the top layer
 train_data_dir = '../data/train/'
+train_data_dir = 'toy_data/train/'
 validation_data_dir = '../data/valid/'
+validation_data_dir = 'toy_data/valid/'
 
 epochs = 50
-batch_size = 32
+batch_size = 16
 
 model = applications.VGG16(include_top=False, weights='imagenet')
 
-datagen = ImageDataGenerator(rescale=1. / 255)
+def train_bottleneck():
+    datagen = ImageDataGenerator(rescale=1. / 255)
 
-generator = datagen.flow_from_directory(
-    train_data_dir,
-    target_size=(img_width, img_height),
-    batch_size=batch_size,
-    class_mode=None,
-    shuffle=False)
+    generator = datagen.flow_from_directory(
+        train_data_dir,
+        target_size=(img_width, img_height),
+        batch_size=batch_size,
+        class_mode=None,
+        shuffle=False)
 
-nb_train_samples = len(generator.filenames)
-num_classes = len(generator.class_indices)
+    nb_train_samples = len(generator.filenames)
+    num_classes = len(generator.class_indices)
 
-predict_size_train = int(math.ceil(nb_train_samples / batch_size))
+    predict_size_train = int(math.ceil(nb_train_samples / batch_size))
 
-bottleneck_features_train = model.predict_generator(
-    generator, predict_size_train, verbose=1)
+    bottleneck_features_train = model.predict_generator(
+        generator, predict_size_train, verbose=1)
 
-np.save('bottleneck_features_train.npy', bottleneck_features_train)
+    np.save('bottleneck_features_train.npy', bottleneck_features_train)
 
-generator = datagen.flow_from_directory(
-    validation_data_dir,
-    target_size=(img_width, img_height),
-    batch_size=batch_size,
-    class_mode=None,
-    shuffle=False)
+    generator = datagen.flow_from_directory(
+        validation_data_dir,
+        target_size=(img_width, img_height),
+        batch_size=batch_size,
+        class_mode=None,
+        shuffle=False)
 
-nb_validation_samples = len(generator.filenames)
+    nb_validation_samples = len(generator.filenames)
 
-predict_size_validation = int(math.ceil(nb_validation_samples / batch_size))
+    predict_size_validation = int(math.ceil(nb_validation_samples / batch_size))
 
-bottleneck_features_validation = model.predict_generator(
-    generator, predict_size_validation, verbose=1)
+    bottleneck_features_validation = model.predict_generator(
+        generator, predict_size_validation, verbose=1)
 
-np.save('bottleneck_features_validation.npy', bottleneck_features_validation)
+    np.save('bottleneck_features_validation.npy', bottleneck_features_validation)
 
 # labels for training data
 datagen_top = ImageDataGenerator(rescale=1. / 255)
