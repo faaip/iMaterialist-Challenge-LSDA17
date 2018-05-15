@@ -7,9 +7,10 @@ For Large-Scale data analysis '18 at Copenhagen University.
 * predict.py - iterates through test.json, predicts for all files and random guesses for missing files.
 
 ### TODO:
-- [ ] Implement early stopping
-- [ ] Generalize script
+- [ ] Implement early stopping.
+- [ ] Generalize script.
 - [ ] Possibility to save and load entire model.
-- [ ] CLI flags for dir und so
+- [ ] CLI flags for dir und so.
 - [ ] Plot of loss-error and accuracy.
+- [ ] Compare several pretrained models and choose the best-performing.
 
