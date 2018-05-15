@@ -62,7 +62,7 @@ def train_bottleneck():
     np.save('bottleneck_features_validation.npy',
             bottleneck_features_validation)
 
-# train_bottleneck()
+train_bottleneck()
 
 
 # labels for training data
