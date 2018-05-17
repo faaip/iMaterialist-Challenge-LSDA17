@@ -13,4 +13,5 @@ For Large-Scale data analysis '18 at Copenhagen University.
 - [ ] CLI flags for dir und so.
 - [ ] Plot of loss-error and accuracy.
 - [ ] Compare several pretrained models and choose the best-performing.
+- [ ] Implement Tensorboard.
 
