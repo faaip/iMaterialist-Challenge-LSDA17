@@ -24,6 +24,7 @@ vgg16_model = applications.VGG16(include_top=False, weights='imagenet')
 BATCH_SIZE = 16
 IMG_WIDTH, IMG_HEIGHT = 224, 224  # image dimensions
 MODEL_PATH = 'models/entire_model.h5'
+MODEL_PATH = 'models/0_0001_model.h5'
 TRAIN_DATA_DIR = '../data/train/'
 VALIDATION_DATA_DIR = '../data/valid/'
 SUBMISSION_DIR = 'submissions/'
@@ -73,17 +74,10 @@ timestr = time.strftime("%Y%m%d-%H%M%S")
 
 ids = []
 predicted_labels = []
-#file_name = SUBMISSION_DIR + time.strftime("%Y%m%d-%H%M%S") + 'submission.csv'
-file_name = SUBMISSION_DIR + 'submission.csv'
-try:
-    df = pd.read_csv('submission.csv')
-    start_index = df['id'].max()
-    print("Starting at:",start_index)
-except FileNotFoundError:
-    print("Starting new submission")
-    start_index = 0
+file_name = SUBMISSION_DIR + time.strftime("%Y%m%d-%H%M%S") + 'submission.csv'
+#file_name = SUBMISSION_DIR + 'submission.csv'
 
-for i in tqdm(json_data['images'][start_index:]):
+for i in tqdm(json_data['images']):
     try:
         pred = get_prediction(test_dir + str(i['image_id']) + '.jpg')
         ids.append(i['image_id'])
