@@ -136,7 +136,7 @@ model.compile(optimizer=adam,
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4,
                               patience=3, min_lr=0.00001)
 
-early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto')
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, verbose=1, mode='auto')
 
 # now augment the data to improve accuracy
 datagen = ImageDataGenerator(
@@ -153,7 +153,7 @@ model_info = model.fit_generator(datagen.flow(train_data, train_labels, batch_si
                                  samples_per_epoch=train_data.shape[0],
                                  epochs=epochs,
                                  validation_data=(validation_data, validation_labels), verbose=1,
-                                 callbacks=[reduce_lr, tb_callback])
+                                 callbacks=[reduce_lr, tb_callback, early_stop])
 # Save model
 print('Saving model as ' + top_model_path)
 model.save(top_model_path)
