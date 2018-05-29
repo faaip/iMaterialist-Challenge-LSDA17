@@ -19,13 +19,12 @@ img_width, img_height = 224, 224  # image dimensions
 ap = argparse.ArgumentParser()
 ap.add_argument("-lr", "--learning-rate", required=True,
                 help="Learning rate for Adam", type=float)
-ap.add_argument('--retrain-all', dest='feature',
-                    action='store_false')
+ap.add_argument('--retrain', dest='retrain',
+                    action='store_true')
 
 args = ap.parse_args()
 learning_rate = args.learning_rate
-retrain_bottle = args.retrain_all
-print(retrain_bottle)
+retrain_bottle = args.retrain
 
 # paths
 top_model_path = 'models/entire_model.h5'
@@ -82,7 +81,9 @@ def train_bottleneck():
             bottleneck_features_validation)
 
 
-train_bottleneck()
+if retrain_bottle:
+    print('Training bottleneck')
+    train_bottleneck()
 
 # labels for training data
 datagen_top = ImageDataGenerator(rescale=1. / 255)
@@ -135,8 +136,7 @@ model.compile(optimizer=adam,
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4,
                               patience=3, min_lr=0.00001)
 
-early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto',
-                                           baseline=None)
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto')
 
 # now augment the data to improve accuracy
 datagen = ImageDataGenerator(
@@ -155,6 +155,7 @@ model_info = model.fit_generator(datagen.flow(train_data, train_labels, batch_si
                                  validation_data=(validation_data, validation_labels), verbose=1,
                                  callbacks=[reduce_lr, tb_callback])
 # Save model
+print('Saving model as ' + top_model_path)
 model.save(top_model_path)
 
 (eval_loss, eval_accuracy) = model.evaluate(
