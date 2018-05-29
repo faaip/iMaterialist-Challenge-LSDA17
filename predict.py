@@ -57,6 +57,7 @@ print('Running main')
 # load model
 model = load_model(MODEL_PATH)
 
+datagen_top = ImageDataGenerator(rescale=1. / 255)
 generator_top = datagen_top.flow_from_directory(
     VALIDATION_DATA_DIR,
     target_size=(IMG_WIDTH, IMG_HEIGHT),
