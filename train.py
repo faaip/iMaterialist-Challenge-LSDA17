@@ -14,7 +14,8 @@ from keras.utils.np_utils import to_categorical
 
 img_width, img_height = 224, 224  # image dimensions
 
-top_model_weights_path = 'models/bottleneck_fc_model.h5'  # the top layer
+top_model_weights_path = 'models/bottleneck_fc_model.h5'
+top_model_arch_path = 'models/bottleneck_arch.json'
 train_data_dir = '../data/train/'
 validation_data_dir = '../data/valid/'
 
@@ -126,6 +127,11 @@ history = model.fit(train_data, train_labels,
                     validation_data=(validation_data, validation_labels),
                     callbacks=[reduce_lr, tb_callback])
 
+# Save architecture
+with open(top_model_arch_path, 'w') as f:
+    f.write(model.to_json())
+
+# Save weights
 model.save_weights(top_model_weights_path)
 
 (eval_loss, eval_accuracy) = model.evaluate(
@@ -133,25 +139,3 @@ model.save_weights(top_model_weights_path)
 
 print("[INFO] accuracy: {:.2f}%".format(eval_accuracy * 100))
 print("[INFO] Loss: {}".format(eval_loss))
-
-# plot
-plt.figure(1)
-
-# summarize history for accuracy
-plt.subplot(211)
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-
-# summarize history for loss
-plt.subplot(212)
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('batch_size_' + str(batch_size) + '.png')
