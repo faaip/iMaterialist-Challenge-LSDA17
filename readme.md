@@ -15,7 +15,7 @@ tensorboard --logdir=iMaterialist-Challenge-LSDA17-/Graph
 ### TODO:
 - [x] Implement Tensorboard.
 - [x] Plot of loss-error and accuracy.
-- [ ] Save model.
+- [x] Save and load model.
 - [ ] Implement early stopping.
 - [ ] Generalize script.
 - [ ] Possibility to save and load entire model.

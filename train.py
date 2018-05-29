@@ -14,19 +14,18 @@ from keras.utils.np_utils import to_categorical
 
 img_width, img_height = 224, 224  # image dimensions
 
-top_model_weights_path = 'models/bottleneck_fc_model.h5'
-top_model_arch_path = 'models/bottleneck_arch.json'
+top_model_path = 'models/entire_model.h5'
 train_data_dir = '../data/train/'
 validation_data_dir = '../data/valid/'
 
 # hyper parameters
-epochs = 100
+epochs = 1
 batch_size = 16
 
 model = applications.VGG16(include_top=False, weights='imagenet')
 
 tb_callback = keras.callbacks.TensorBoard(log_dir='./Graph', histogram_freq=0,
-          write_graph=True, write_images=True)
+                                          write_graph=True, write_images=True)
 
 
 def train_bottleneck():
@@ -67,8 +66,8 @@ def train_bottleneck():
     np.save('bottleneck_features_validation.npy',
             bottleneck_features_validation)
 
-train_bottleneck()
 
+train_bottleneck()
 
 # labels for training data
 datagen_top = ImageDataGenerator(rescale=1. / 255)
@@ -127,12 +126,8 @@ history = model.fit(train_data, train_labels,
                     validation_data=(validation_data, validation_labels),
                     callbacks=[reduce_lr, tb_callback])
 
-# Save architecture
-with open(top_model_arch_path, 'w') as f:
-    f.write(model.to_json())
-
-# Save weights
-model.save_weights(top_model_weights_path)
+# Save model
+model.save(top_model_path)
 
 (eval_loss, eval_accuracy) = model.evaluate(
     validation_data, validation_labels, batch_size=batch_size, verbose=1)

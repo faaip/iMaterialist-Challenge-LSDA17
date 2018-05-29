@@ -1,11 +1,14 @@
 import datetime
 import json
 import math
+import time
+
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from keras.models import load_model
 from keras import applications
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
@@ -20,9 +23,10 @@ vgg16_model = applications.VGG16(include_top=False, weights='imagenet')
 # constants
 BATCH_SIZE = 16
 IMG_WIDTH, IMG_HEIGHT = 224, 224  # image dimensions
-TOP_MODEL_WEIGHTS_PATH = 'models/bottleneck_fc_model.h5'  # the top layer
+MODEL_PATH = 'models/entire_model.h5'
 TRAIN_DATA_DIR = '../data/train/'
 VALIDATION_DATA_DIR = '../data/valid/'
+SUBMISSION_DIR = 'submissions/'
 
 
 def get_prediction(image_path):
@@ -50,61 +54,26 @@ def get_prediction(image_path):
 
 
 print('Running main')
-# Set variables for model
-datagen_top = ImageDataGenerator(rescale=1. / 255)
-generator_top = datagen_top.flow_from_directory(
-    TRAIN_DATA_DIR,
-    target_size=(IMG_WIDTH, IMG_HEIGHT),
-    batch_size=BATCH_SIZE,
-    class_mode='categorical',
-    shuffle=False)
-
-nb_train_samples = len(generator_top.filenames)
-num_classes = len(generator_top.class_indices)
-
-# load the bottleneck features saved earlier
-train_data = np.load('bottleneck_features_train.npy')
-
-# get the class lebels for the training data, in the original order
-train_labels = generator_top.classes
-
-# build top model
-model = Sequential()
-model.add(Flatten(input_shape=(7, 7, 512)))
-model.add(Dense(256, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='sigmoid'))
-
-model.load_weights(TOP_MODEL_WEIGHTS_PATH)
-
-# convert the training labels to categorical vectors
-train_labels = to_categorical(train_labels, num_classes=num_classes)
-
-# labels for validation features
-generator_top = datagen_top.flow_from_directory(
-    VALIDATION_DATA_DIR,
-    target_size=(IMG_WIDTH, IMG_HEIGHT),
-    batch_size=BATCH_SIZE,
-    class_mode=None,
-    shuffle=False)
-
-nb_validation_samples = len(generator_top.filenames)
-
-validation_data = np.load('bottleneck_features_validation.npy')
-validation_labels = generator_top.classes
-validation_labels = to_categorical(
-    validation_labels, num_classes=num_classes)
+# load model
+model = load_model(MODEL_PATH)
 
 # Load json data
 json_data = json.load(open('kaggle/test.json'))
 test_dir = '../data/test/'
 
+timestr = time.strftime("%Y%m%d-%H%M%S")
+
 ids = []
 predicted_labels = []
-file_name = 'submission.csv'
-df = pd.read_csv('submission.csv')
-start_index = df['id'].max()
-print("Starting at:",start_index)
+#file_name = SUBMISSION_DIR + time.strftime("%Y%m%d-%H%M%S") + 'submission.csv'
+file_name = SUBMISSION_DIR + 'submission.csv'
+try:
+    df = pd.read_csv('submission.csv')
+    start_index = df['id'].max()
+    print("Starting at:",start_index)
+except FileNotFoundError:
+    print("Starting new submission")
+    start_index = 0
 
 for i in tqdm(json_data['images'][start_index:]):
     try:
