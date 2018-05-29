@@ -19,9 +19,13 @@ img_width, img_height = 224, 224  # image dimensions
 ap = argparse.ArgumentParser()
 ap.add_argument("-lr", "--learning-rate", required=True,
                 help="Learning rate for Adam", type=float)
+ap.add_argument('--retrain-all', dest='feature',
+                    action='store_false')
 
 args = ap.parse_args()
 learning_rate = args.learning_rate
+retrain_bottle = args.retrain_all
+print(retrain_bottle)
 
 # paths
 top_model_path = 'models/entire_model.h5'
@@ -144,7 +148,6 @@ datagen = ImageDataGenerator(
     vertical_flip=False,
     fill_mode='nearest',
 )
-
 
 model_info = model.fit_generator(datagen.flow(train_data, train_labels, batch_size=batch_size),
                                  samples_per_epoch=train_data.shape[0],
