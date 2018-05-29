@@ -124,9 +124,11 @@ validation_labels = to_categorical(validation_labels, num_classes=num_classes)
 # TRAIN TOP MODEL
 model = Sequential()
 model.add(Flatten(input_shape=train_data.shape[1:]))
-model.add(Dense(256, activation='relu'))
+model.add(Dense(4096, activation='relu'))
+model.add(Dense(4096, activation='relu'))
+model.add(Dense(1000, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(num_classes, activation='softmax'))
 
 adam = Adam(lr=args.learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
 model.compile(optimizer=adam,
