@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import keras
+import argparse
 from keras import applications
 from keras.callbacks import ReduceLROnPlateau
 from keras.layers import Dense, Dropout, Flatten
@@ -14,6 +15,15 @@ from keras.utils.np_utils import to_categorical
 
 img_width, img_height = 224, 224  # image dimensions
 
+# cli arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-lr", "--learning-rate", required=True,
+                help="Learning rate for Adam", type=float)
+
+args = ap.parse_args()
+learning_rate = args.learning_rate
+
+# paths
 top_model_path = 'models/entire_model.h5'
 features_path = 'features/'
 train_data_dir = '../data/train/'
@@ -113,7 +123,7 @@ model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='sigmoid'))
 
-adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
+adam = Adam(lr=args.learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
 model.compile(optimizer=adam,
               loss='categorical_crossentropy', metrics=['accuracy'])
 
