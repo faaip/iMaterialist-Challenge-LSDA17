@@ -135,10 +135,10 @@ model.compile(optimizer=adam,
               loss='categorical_crossentropy', metrics=['accuracy'])
 
 # https://stackoverflow.com/questions/43388186/keras-why-my-val-acc-suddenly-drops-at-epoch-42-50
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4,
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
                               patience=2, min_lr=0.00001)
 
-early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=1, verbose=1, mode='auto')
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=4, verbose=1, mode='auto')
 
 # now augment the data to improve accuracy
 datagen = ImageDataGenerator(
@@ -151,7 +151,7 @@ datagen = ImageDataGenerator(
     fill_mode='nearest',
 )
 
-epochs = 5
+epochs=40
 
 model_info = model.fit_generator(datagen.flow(train_data, train_labels, batch_size=batch_size),
                                  samples_per_epoch=train_data.shape[0],
