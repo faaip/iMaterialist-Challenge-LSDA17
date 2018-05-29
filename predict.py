@@ -57,6 +57,13 @@ print('Running main')
 # load model
 model = load_model(MODEL_PATH)
 
+generator_top = datagen_top.flow_from_directory(
+    VALIDATION_DATA_DIR,
+    target_size=(IMG_WIDTH, IMG_HEIGHT),
+    batch_size=BATCH_SIZE,
+    class_mode=None,
+    shuffle=False)
+
 # Load json data
 json_data = json.load(open('kaggle/test.json'))
 test_dir = '../data/test/'

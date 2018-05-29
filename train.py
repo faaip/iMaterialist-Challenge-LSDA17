@@ -151,7 +151,7 @@ datagen = ImageDataGenerator(
     fill_mode='nearest',
 )
 
-epochs = 50
+epochs = 5
 
 model_info = model.fit_generator(datagen.flow(train_data, train_labels, batch_size=batch_size),
                                  samples_per_epoch=train_data.shape[0],
