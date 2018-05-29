@@ -33,8 +33,8 @@ train_data_dir = '../data/train/'
 validation_data_dir = '../data/valid/'
 
 # hyper parameters
-epochs = 82
-batch_size = 16
+epochs = 80
+batch_size = 128
 
 model = applications.VGG16(include_top=False, weights='imagenet')
 
