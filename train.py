@@ -2,6 +2,7 @@ import math
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import keras
 from keras import applications
 from keras.callbacks import ReduceLROnPlateau
 from keras.layers import Dense, Dropout, Flatten
@@ -22,6 +23,9 @@ epochs = 82
 batch_size = 16
 
 model = applications.VGG16(include_top=False, weights='imagenet')
+
+tb_callback = keras.callbacks.TensorBoard(log_dir='./Graph', histogram_freq=0,
+          write_graph=True, write_images=True)
 
 
 def train_bottleneck():
@@ -120,7 +124,7 @@ history = model.fit(train_data, train_labels,
                     epochs=epochs,
                     batch_size=batch_size,
                     validation_data=(validation_data, validation_labels),
-                    callbacks=[reduce_lr])
+                    callbacks=[reduce_lr, tb_callback])
 
 model.save_weights(top_model_weights_path)
 
