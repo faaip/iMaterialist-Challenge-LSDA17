@@ -15,6 +15,7 @@ from keras.utils.np_utils import to_categorical
 img_width, img_height = 224, 224  # image dimensions
 
 top_model_path = 'models/entire_model.h5'
+features_path = 'features/'
 train_data_dir = '../data/train/'
 validation_data_dir = '../data/valid/'
 
@@ -46,7 +47,7 @@ def train_bottleneck():
     bottleneck_features_train = model.predict_generator(
         generator, predict_size_train, verbose=1)
 
-    np.save('bottleneck_features_train.npy', bottleneck_features_train)
+    np.save(features_path + 'bottleneck_features_train.npy', bottleneck_features_train)
 
     generator = datagen.flow_from_directory(
         validation_data_dir,
@@ -63,7 +64,7 @@ def train_bottleneck():
     bottleneck_features_validation = model.predict_generator(
         generator, predict_size_validation, verbose=1)
 
-    np.save('bottleneck_features_validation.npy',
+    np.save(features_path + 'bottleneck_features_validation.npy',
             bottleneck_features_validation)
 
 
@@ -82,7 +83,7 @@ nb_train_samples = len(generator_top.filenames)
 num_classes = len(generator_top.class_indices)
 
 # load the bottleneck features saved earlier
-train_data = np.load('bottleneck_features_train.npy')
+train_data = np.load(features_path + 'bottleneck_features_train.npy')
 
 # get the class lebels for the training data, in the original order
 train_labels = generator_top.classes
@@ -100,7 +101,7 @@ generator_top = datagen_top.flow_from_directory(
 
 nb_validation_samples = len(generator_top.filenames)
 
-validation_data = np.load('bottleneck_features_validation.npy')
+validation_data = np.load(features_path + 'bottleneck_features_validation.npy')
 
 validation_labels = generator_top.classes
 validation_labels = to_categorical(validation_labels, num_classes=num_classes)
