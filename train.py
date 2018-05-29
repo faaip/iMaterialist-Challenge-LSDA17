@@ -136,9 +136,9 @@ model.compile(optimizer=adam,
 
 # https://stackoverflow.com/questions/43388186/keras-why-my-val-acc-suddenly-drops-at-epoch-42-50
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.4,
-                              patience=3, min_lr=0.00001)
+                              patience=2, min_lr=0.00001)
 
-early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=2, verbose=1, mode='auto')
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=1, verbose=1, mode='auto')
 
 # now augment the data to improve accuracy
 datagen = ImageDataGenerator(
